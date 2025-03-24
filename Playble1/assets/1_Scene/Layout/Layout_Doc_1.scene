@@ -11,7 +11,7 @@
   },
   {
     "__type__": "cc.Scene",
-    "_name": "scene-2d-003",
+    "_name": "Layout_Doc_1",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -279,8 +279,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 360,
-      "y": 635,
+      "x": 960,
+      "y": 540,
       "z": 0
     },
     "_lrot": {
@@ -2535,8 +2535,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 182.49447631835938,
-      "height": 50.4
+      "width": 186.49447631835938,
+      "height": 54.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2582,7 +2582,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": false,
+    "_enableOutline": true,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 255,
@@ -2714,8 +2714,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 720,
-      "height": 1270
+      "width": 1920,
+      "height": 1080
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2752,7 +2752,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 885.9163987138263,
+    "_orthoHeight": 776.6410537870472,
     "_near": 0,
     "_far": 2000,
     "_color": {

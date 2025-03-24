@@ -1,3 +1,6 @@
+/*
+* đây là một component layout dạng vertical không scale tự động
+*/
 import { _decorator, Component, Node, UITransform, Vec3, CCFloat, CCBoolean, Rect, Enum, Vec2 } from 'cc';
 const { ccclass, property, executeInEditMode } = _decorator;
 

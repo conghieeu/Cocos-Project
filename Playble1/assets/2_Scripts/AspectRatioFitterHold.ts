@@ -13,23 +13,40 @@ const { ccclass, property, executeInEditMode } = _decorator;
 @executeInEditMode
 export class AspectRatioFitterHold extends Component {
     @property
+    autoUpdate: boolean = true;
+
+    @property
     public aspectRatio: number = 1.0; // Tỷ lệ khung hình mong muốn (width / height)
 
     @property
     public isFollowWidth: boolean = true; // Theo chiều rộng hay chiều cao
 
     @property
-    public isFollowHeight: boolean = false; // Theo chiều rộng hay chiều cao
+    public isFollowHeight: boolean = true; // Theo chiều rộng hay chiều cao
 
     @property
     public isHold: boolean = true; // khi chiều dài vượt ngững Ratio thì sẽ không bị thay đổi và ngược lại
 
-    onLoad() {
-        this.updateAspectRatio();
+    start() {
+        this.getAspectRatio();
+    }
+ 
+    update(deltaTime: number) {
+        if (this.autoUpdate) {
+            this.updateAspectRatio();
+        }
     }
 
-    onEnable() {
-        this.updateAspectRatio();
+    resetInEditor() {
+        this.getAspectRatio();
+        this.autoUpdate = true;
+    }
+
+    getAspectRatio() {
+        const uiTransform = this.node.getComponent(UITransform);
+        if (uiTransform) {
+            this.aspectRatio = uiTransform.width / uiTransform.height;
+        }
     }
 
     updateAspectRatio() {
@@ -71,7 +88,5 @@ export class AspectRatioFitterHold extends Component {
         }
     }
 
-    update(deltaTime: number) {
-        this.updateAspectRatio();
-    }
+
 }

@@ -5,7 +5,6 @@ const { ccclass, property, executeInEditMode } = _decorator;
 @ccclass('AutoScale')
 @executeInEditMode
 export class AutoScale extends Component {
-
     @property({ type: UITransform, tooltip: "Node cha" })
     parentTransform: UITransform | null = null;
 

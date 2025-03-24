@@ -21,7 +21,7 @@ export class RatioAutoScale extends Component {
     @property({ type: Boolean, tooltip: "Tự động cập nhật trong runtime" })
     autoUpdate: boolean = true;
 
-
+    
     resetInEditor() {
         this.parentTransform = this.node.parent?.getComponent(UITransform) || null;
         this.parentContentSize = new Vec2(this.parentTransform?.width || 0, this.parentTransform?.height || 0);

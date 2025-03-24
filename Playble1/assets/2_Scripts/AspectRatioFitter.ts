@@ -11,14 +11,32 @@ export class AspectRatioFitter extends Component {
   public isFollowWidth: boolean = true; // Theo chiều rộng hay chiều cao
 
   @property
-  public isFollowHeight: boolean = false; // Theo chiều rộng hay chiều cao
+  public isFollowHeight: boolean = true; // Theo chiều rộng hay chiều cao
 
-  onLoad() {
-    this.updateAspectRatio();
+  @property
+  autoUpdate: boolean = true;
+
+  start() {
+    this.getAspectRatio();
   }
 
-  onEnable() {
-    this.updateAspectRatio();
+  resetInEditor() {
+    this.getAspectRatio();
+    this.autoUpdate = true;
+  }
+
+  update(deltaTime: number) {
+    // Nếu bạn muốn cập nhật tỷ lệ khung hình mỗi frame, bạn có thể gọi updateAspectRatio() ở đây
+    if (this.autoUpdate) {
+      this.updateAspectRatio();
+    }
+  }
+
+  getAspectRatio() {
+    const uiTransform = this.node.getComponent(UITransform);
+    if (uiTransform) {
+      this.aspectRatio = uiTransform.width / uiTransform.height;
+    }
   }
 
   updateAspectRatio() {
@@ -54,8 +72,5 @@ export class AspectRatioFitter extends Component {
     }
   }
 
-  update(deltaTime: number) {
-    // Nếu bạn muốn cập nhật tỷ lệ khung hình mỗi frame, bạn có thể gọi updateAspectRatio() ở đây
-    this.updateAspectRatio();
-  }
+
 }
