@@ -1583,6 +1583,7 @@
     "videoPlayer": {
       "__id__": 39
     },
+    "retryDelay": 1,
     "_id": "3ek2oddC5B94fZBc7l7L9h"
   },
   {
