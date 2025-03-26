@@ -2,7 +2,7 @@
   "ver": "1.0.27",
   "importer": "image",
   "imported": true,
-  "uuid": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb",
+  "uuid": "1ebd1689-ae41-484d-a282-0f715aca3a62",
   "files": [
     ".json",
     ".png"
@@ -10,14 +10,14 @@
   "subMetas": {
     "6c48a": {
       "importer": "texture",
-      "uuid": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb@6c48a",
+      "uuid": "1ebd1689-ae41-484d-a282-0f715aca3a62@6c48a",
       "displayName": "Video calling",
       "id": "6c48a",
       "name": "texture",
       "userData": {
         "wrapModeS": "clamp-to-edge",
         "wrapModeT": "clamp-to-edge",
-        "imageUuidOrDatabaseUri": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb",
+        "imageUuidOrDatabaseUri": "1ebd1689-ae41-484d-a282-0f715aca3a62",
         "isUuid": true,
         "visible": false,
         "minfilter": "linear",
@@ -34,7 +34,7 @@
     },
     "f9941": {
       "importer": "sprite-frame",
-      "uuid": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb@f9941",
+      "uuid": "1ebd1689-ae41-484d-a282-0f715aca3a62@f9941",
       "displayName": "Video calling",
       "id": "f9941",
       "name": "spriteFrame",
@@ -114,7 +114,7 @@
           ]
         },
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb@6c48a",
+        "imageUuidOrDatabaseUri": "1ebd1689-ae41-484d-a282-0f715aca3a62@6c48a",
         "atlasUuid": ""
       },
       "ver": "1.0.12",
@@ -129,6 +129,6 @@
     "type": "sprite-frame",
     "hasAlpha": true,
     "fixAlphaTransparencyArtifacts": false,
-    "redirect": "0f13dbd9-ec99-4c24-948f-ac3a2a9fadbb@6c48a"
+    "redirect": "1ebd1689-ae41-484d-a282-0f715aca3a62@6c48a"
   }
 }

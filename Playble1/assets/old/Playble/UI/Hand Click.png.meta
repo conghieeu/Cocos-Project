@@ -2,7 +2,7 @@
   "ver": "1.0.27",
   "importer": "image",
   "imported": true,
-  "uuid": "c6b5b238-d2c5-4c10-8528-81c14295f4bb",
+  "uuid": "f53d4f7f-66b5-4331-854f-716cb31b4b9d",
   "files": [
     ".json",
     ".png"
@@ -10,14 +10,14 @@
   "subMetas": {
     "6c48a": {
       "importer": "texture",
-      "uuid": "c6b5b238-d2c5-4c10-8528-81c14295f4bb@6c48a",
+      "uuid": "f53d4f7f-66b5-4331-854f-716cb31b4b9d@6c48a",
       "displayName": "Hand Click",
       "id": "6c48a",
       "name": "texture",
       "userData": {
         "wrapModeS": "clamp-to-edge",
         "wrapModeT": "clamp-to-edge",
-        "imageUuidOrDatabaseUri": "c6b5b238-d2c5-4c10-8528-81c14295f4bb",
+        "imageUuidOrDatabaseUri": "f53d4f7f-66b5-4331-854f-716cb31b4b9d",
         "isUuid": true,
         "visible": false,
         "minfilter": "linear",
@@ -34,7 +34,7 @@
     },
     "f9941": {
       "importer": "sprite-frame",
-      "uuid": "c6b5b238-d2c5-4c10-8528-81c14295f4bb@f9941",
+      "uuid": "f53d4f7f-66b5-4331-854f-716cb31b4b9d@f9941",
       "displayName": "Hand Click",
       "id": "f9941",
       "name": "spriteFrame",
@@ -114,7 +114,7 @@
           ]
         },
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "c6b5b238-d2c5-4c10-8528-81c14295f4bb@6c48a",
+        "imageUuidOrDatabaseUri": "f53d4f7f-66b5-4331-854f-716cb31b4b9d@6c48a",
         "atlasUuid": ""
       },
       "ver": "1.0.12",
@@ -129,6 +129,6 @@
     "type": "sprite-frame",
     "hasAlpha": true,
     "fixAlphaTransparencyArtifacts": false,
-    "redirect": "c6b5b238-d2c5-4c10-8528-81c14295f4bb@6c48a"
+    "redirect": "f53d4f7f-66b5-4331-854f-716cb31b4b9d@6c48a"
   }
 }

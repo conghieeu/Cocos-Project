@@ -2,7 +2,7 @@
   "ver": "1.0.27",
   "importer": "image",
   "imported": true,
-  "uuid": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781",
+  "uuid": "d2b60efd-de85-4d34-857a-dede5648bf35",
   "files": [
     ".json",
     ".png"
@@ -10,14 +10,14 @@
   "subMetas": {
     "6c48a": {
       "importer": "texture",
-      "uuid": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781@6c48a",
+      "uuid": "d2b60efd-de85-4d34-857a-dede5648bf35@6c48a",
       "displayName": "ic_message",
       "id": "6c48a",
       "name": "texture",
       "userData": {
         "wrapModeS": "clamp-to-edge",
         "wrapModeT": "clamp-to-edge",
-        "imageUuidOrDatabaseUri": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781",
+        "imageUuidOrDatabaseUri": "d2b60efd-de85-4d34-857a-dede5648bf35",
         "isUuid": true,
         "visible": false,
         "minfilter": "linear",
@@ -34,7 +34,7 @@
     },
     "f9941": {
       "importer": "sprite-frame",
-      "uuid": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781@f9941",
+      "uuid": "d2b60efd-de85-4d34-857a-dede5648bf35@f9941",
       "displayName": "ic_message",
       "id": "f9941",
       "name": "spriteFrame",
@@ -114,7 +114,7 @@
           ]
         },
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781@6c48a",
+        "imageUuidOrDatabaseUri": "d2b60efd-de85-4d34-857a-dede5648bf35@6c48a",
         "atlasUuid": ""
       },
       "ver": "1.0.12",
@@ -129,6 +129,6 @@
     "type": "sprite-frame",
     "hasAlpha": true,
     "fixAlphaTransparencyArtifacts": false,
-    "redirect": "1eb563d3-c1e5-4c57-8fe1-4c9a061a2781@6c48a"
+    "redirect": "d2b60efd-de85-4d34-857a-dede5648bf35@6c48a"
   }
 }
