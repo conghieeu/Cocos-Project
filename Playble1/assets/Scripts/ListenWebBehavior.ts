@@ -1,8 +1,8 @@
 import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
-@ccclass('YourComponent')
-export class YourComponent extends Component {
+@ccclass('ListenWebBehavior')
+export class ListenWebBehavior extends Component {
     start() {
         // Lắng nghe sự kiện website loaded
         window.addEventListener('websiteLoaded', (event: CustomEvent) => {

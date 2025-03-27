@@ -1,3 +1,8 @@
+/*
+* Chưa hoạt động được
+* đây là một component layout tự động sắp xếp các childen con của nó
+*/
+
 import { _decorator, Component, Node, Enum, Vec3, UITransform } from "cc";
 const { ccclass, property, executeInEditMode} = _decorator;
 
