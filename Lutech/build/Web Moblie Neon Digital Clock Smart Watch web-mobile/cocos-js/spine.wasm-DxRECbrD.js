@@ -1,0 +1,2 @@
+System.register([],(function(t){"use strict";return{execute:function(){t("default",(function(){}))}}}));
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3BpbmUud2FzbS1EeFJFQ2JyRC5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vUHJvZ3JhbURhdGEvY29jb3MvZWRpdG9ycy9DcmVhdG9yLzMuOC41L2V4dGVybmFsOmVtc2NyaXB0ZW4vc3BpbmUvc3BpbmUud2FzbS5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiAoKSB7fSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoib0ZBQWUsV0FBWSJ9
