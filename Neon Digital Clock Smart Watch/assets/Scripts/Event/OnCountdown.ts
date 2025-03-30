@@ -27,14 +27,14 @@ export class OnCountdown extends Component {
         // Kích hoạt các node trong mảng nodeActive
         this.nodeActive.forEach(node => {
             if (node) {
-                node.active = true;
+                this.node.active = true;
             }
         });
 
         // Tắt các node trong mảng nodeInactive
         this.nodeInactive.forEach(node => {
             if (node) {
-                node.active = false;
+                this.node.active = false;
             }
         });
 

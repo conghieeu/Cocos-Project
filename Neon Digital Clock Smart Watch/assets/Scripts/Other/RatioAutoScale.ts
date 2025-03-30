@@ -1,33 +1,42 @@
-import { _decorator, Component, Node, UITransform, Vec2, Vec3 } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-// Tự động scale theo đối tượng cha scale ở đây là đối chiếu theo UI Transform
-@ccclass('RatioAutoScale')
+// Tự động scale theo đối tượng cha scale ở đây là đối chiếu theo kích thước
+@ccclass
 @executeInEditMode
-export class RatioAutoScale extends Component {
+export default class RatioAutoScale extends cc.Component {
+    @property({
+        type: cc.Node,
+        tooltip: "Node cha"
+    })
+    parentNode: cc.Node | null = null;
 
-    @property({ type: UITransform, tooltip: "Node cha" })
-    parentTransform: UITransform | null = null;
+    @property({
+        tooltip: "Kích thước của node cha"
+    })
+    parentContentSize: cc.Vec2 = cc.v2(0, 0);
 
-    @property({ type: Vec2, tooltip: "Kích thước của node cha" })
-    parentContentSize: Vec2 = new Vec2(0, 0);
+    @property({
+        tooltip: "Kích thước ban đầu của node con"
+    })
+    contentSize: cc.Vec2 = cc.v2(0, 0);
 
-    @property({ type: Vec2, tooltip: "Kích thước ban đầu của node con" })
-    contentSize: Vec2 = new Vec2(0, 0);
+    @property({
+        tooltip: "Vị trí ban đầu của node con"
+    })
+    position: cc.Vec2 = cc.v2(0, 0);
 
-    @property({ type: Vec2, tooltip: "Vị trí ban đầu của node con" })
-    position: Vec2 = new Vec2(0, 0);
-
-    @property({ type: Boolean, tooltip: "Tự động cập nhật trong runtime" })
+    @property({
+        tooltip: "Tự động cập nhật trong runtime"
+    })
     autoUpdate: boolean = true;
 
-    
     resetInEditor() {
-        this.parentTransform = this.node.parent?.getComponent(UITransform) || null;
-        this.parentContentSize = new Vec2(this.parentTransform?.width || 0, this.parentTransform?.height || 0);
-        this.contentSize = new Vec2(this.node.getComponent(UITransform)?.width || 0, this.node.getComponent(UITransform)?.height || 0);
-        this.position = new Vec2(this.node.position.x, this.node.position.y);
-
+        if (this.node.parent) {
+            this.parentNode = this.node.parent;
+            this.parentContentSize = cc.v2(this.parentNode.width, this.parentNode.height);
+            this.contentSize = cc.v2(this.node.width, this.node.height);
+            this.position = cc.v2(this.node.x, this.node.y);
+        }
         this.autoUpdate = true;
     }
 
@@ -38,14 +47,17 @@ export class RatioAutoScale extends Component {
     }
 
     private updateUITransform() {
-        if (!this.parentTransform) return;
+        if (!this.parentNode) return;
 
-        const ratioScaleParentWidth = this.parentTransform.width / this.parentContentSize.x;
-        const ratioScaleParentHeight = this.parentTransform.height / this.parentContentSize.y;
+        const ratioScaleParentWidth = this.parentNode.width / this.parentContentSize.x;
+        const ratioScaleParentHeight = this.parentNode.height / this.parentContentSize.y;
 
-        this.node.getComponent(UITransform)?.setContentSize(this.contentSize.x * ratioScaleParentWidth, this.contentSize.y * ratioScaleParentHeight);
-        this.node.position = new Vec3(this.position.x * ratioScaleParentWidth, this.position.y * ratioScaleParentHeight, 0);
+        // Update size
+        this.node.width = this.contentSize.x * ratioScaleParentWidth;
+        this.node.height = this.contentSize.y * ratioScaleParentHeight;
+
+        // Update position
+        this.node.x = this.position.x * ratioScaleParentWidth;
+        this.node.y = this.position.y * ratioScaleParentHeight;
     }
 }
-
-

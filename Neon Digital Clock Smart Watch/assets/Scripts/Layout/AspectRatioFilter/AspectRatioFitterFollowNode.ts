@@ -1,117 +1,131 @@
-import { _decorator, Component, Node, UITransform, Size } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('AspectRatioFitterFollowNode')
+@ccclass
 @executeInEditMode
-export class AspectRatioFitterFollowNode extends Component {
-    @property({ type: Node, tooltip: "Node bên trái để căn chỉnh" })
-    leftNode: Node | null = null;
+export default class AspectRatioFitterFollowNode extends cc.Component {
+    @property({
+        type: cc.Node,
+        tooltip: "Node bên trái để căn chỉnh"
+    })
+    leftNode: cc.Node | null = null;
 
-    @property({ tooltip: "Khoảng cách với node bên trái" })
+    @property({
+        tooltip: "Khoảng cách với node bên trái"
+    })
     leftSpacing: number = 0;
 
-    @property({ type: Node, tooltip: "Node bên phải để căn chỉnh" })
-    rightNode: Node | null = null;
+    @property({
+        type: cc.Node,
+        tooltip: "Node bên phải để căn chỉnh"
+    })
+    rightNode: cc.Node | null = null;
 
-    @property({ tooltip: "Khoảng cách với node bên phải" })
+    @property({
+        tooltip: "Khoảng cách với node bên phải"
+    })
     rightSpacing: number = 0;
 
-    @property({ type: Node, tooltip: "Node phía dưới để căn chỉnh" })
-    nodeDown: Node | null = null;
+    @property({
+        type: cc.Node,
+        tooltip: "Node phía dưới để căn chỉnh"
+    })
+    nodeDown: cc.Node | null = null;
 
-    @property({ tooltip: "Khoảng cách với node phía dưới" })
+    @property({
+        tooltip: "Khoảng cách với node phía dưới"
+    })
     downSpacing: number = 0;
 
-    @property({ type: Node, tooltip: "Node phía trên để căn chỉnh" })
-    nodeUp: Node | null = null;
+    @property({
+        type: cc.Node,
+        tooltip: "Node phía trên để căn chỉnh"
+    })
+    nodeUp: cc.Node | null = null;
 
-    @property({ tooltip: "Khoảng cách với node phía trên" })
+    @property({
+        tooltip: "Khoảng cách với node phía trên"
+    })
     upSpacing: number = 0;
 
-    @property({ 
-        type: Number, 
-        tooltip: "Tỷ lệ khung hình mong muốn (width / height)" 
+    @property({
+        type: cc.Float,
+        tooltip: "Tỷ lệ khung hình mong muốn (width / height)"
     })
     aspectRatio: number = 1.0;
 
-    protected onEnable(): void {
+    onEnable() {
         this.setAspectRatio();
     }
 
-    update(deltaTime: number) {
+    update() {
         if (this.leftNode && !this.nodeDown) {
             this.updateAspectRatioX();
         }
-        if (this.nodeDown && !this.leftNode) {
+        else if (this.nodeDown && !this.leftNode) {
             this.updateAspectRatioY();
         }
         else if (this.leftNode && this.nodeDown) {
-            const nodeTransform = this.node.getComponent(UITransform);
-            const targetTransform = this.leftNode.getComponent(UITransform);
-            const targetTransform2 = this.nodeDown.getComponent(UITransform);
-
-            if (!nodeTransform || !targetTransform || !targetTransform2) return;
-
             // Lấy bound của cả 2 node
-            const nodeBound = nodeTransform.getBoundingBoxToWorld();
-            const targetBound1 = targetTransform.getBoundingBoxToWorld();
-            const targetBound2 = targetTransform2.getBoundingBoxToWorld();
+            const nodeBound = this.node.getBoundingBox();
+            const targetBound1 = this.leftNode.getBoundingBox();
+            const targetBound2 = this.nodeDown.getBoundingBox();
+
+            // Convert bounds to world space
+            const nodeWorldBound = this.node.parent.convertToWorldSpaceAR(cc.v2(nodeBound.x, nodeBound.y));
+            const target1WorldBound = this.leftNode.parent.convertToWorldSpaceAR(cc.v2(targetBound1.x, targetBound1.y));
+            const target2WorldBound = this.nodeDown.parent.convertToWorldSpaceAR(cc.v2(targetBound2.x, targetBound2.y));
 
             // Tính toán chiều rộng mới dựa trên khoảng cách giữa 2 node
-            const newWidth = Math.abs(nodeBound.xMin - targetBound1.xMin) - this.leftSpacing;
-            const newY = Math.abs(nodeBound.yMax - targetBound2.yMin) - this.downSpacing;
+            const newWidth = Math.abs(nodeWorldBound.x - target1WorldBound.x) - this.leftSpacing;
+            const newY = Math.abs(nodeWorldBound.y - target2WorldBound.y) - this.downSpacing;
 
             if (newWidth < newY) {
                 this.updateAspectRatioX();
-            }
-            else {
+            } else {
                 this.updateAspectRatioY();
             }
         }
     }
 
     private setAspectRatio() {
-        const uiTransform = this.node.getComponent(UITransform);
-        if (uiTransform) {
-            this.aspectRatio = uiTransform.width / uiTransform.height;
-        }
+        this.aspectRatio = this.node.width / this.node.height;
     }
 
-    updateAspectRatioX() {
+    private updateAspectRatioX() {
         if (!this.leftNode) return;
 
-        const nodeTransform = this.node.getComponent(UITransform);
-        const targetTransform = this.leftNode.getComponent(UITransform);
-
-        if (!nodeTransform || !targetTransform) return;
-
         // Lấy bound của cả 2 node
-        const nodeBound = nodeTransform.getBoundingBoxToWorld();
-        const targetBound1 = targetTransform.getBoundingBoxToWorld();
+        const nodeBound = this.node.getBoundingBox();
+        const targetBound = this.leftNode.getBoundingBox();
+
+        // Convert bounds to world space
+        const nodeWorldBound = this.node.parent.convertToWorldSpaceAR(cc.v2(nodeBound.x, nodeBound.y));
+        const targetWorldBound = this.leftNode.parent.convertToWorldSpaceAR(cc.v2(targetBound.x, targetBound.y));
 
         // Tính toán chiều rộng mới dựa trên khoảng cách giữa 2 node
-        const newWidth = Math.abs(nodeBound.xMin - targetBound1.xMin) - this.leftSpacing;
+        const newWidth = Math.abs(nodeWorldBound.x - targetWorldBound.x) - this.leftSpacing;
         const newHeight = newWidth / this.aspectRatio;
 
-        nodeTransform.setContentSize(new Size(newWidth, newHeight));
+        this.node.width = newWidth;
+        this.node.height = newHeight;
     }
 
-    updateAspectRatioY() {
+    private updateAspectRatioY() {
         if (!this.nodeDown) return;
 
-        const nodeTransform = this.node.getComponent(UITransform);
-        const targetTransform2 = this.nodeDown.getComponent(UITransform);
-
-        if (!nodeTransform || !targetTransform2) return;
-
         // Lấy bound của cả 2 node
-        const nodeBound = nodeTransform.getBoundingBoxToWorld();
-        const targetBound2 = targetTransform2.getBoundingBoxToWorld();
+        const nodeBound = this.node.getBoundingBox();
+        const targetBound = this.nodeDown.getBoundingBox();
+
+        // Convert bounds to world space
+        const nodeWorldBound = this.node.parent.convertToWorldSpaceAR(cc.v2(nodeBound.x, nodeBound.y));
+        const targetWorldBound = this.nodeDown.parent.convertToWorldSpaceAR(cc.v2(targetBound.x, targetBound.y));
 
         // Tính toán vị trí mới của node
-        const newY = Math.abs(nodeBound.yMax - targetBound2.yMin) - this.downSpacing;
+        const newY = Math.abs(nodeWorldBound.y - targetWorldBound.y) - this.downSpacing;
         const newX = newY * this.aspectRatio;
 
-        nodeTransform.setContentSize(new Size(newX, newY));
+        this.node.width = newX;
+        this.node.height = newY;
     }
 }

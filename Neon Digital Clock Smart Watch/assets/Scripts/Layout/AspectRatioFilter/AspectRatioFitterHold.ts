@@ -6,32 +6,39 @@
  * Nhưng mà tỷ lệ sẽ được giữ khi aspectRatio nhỏ hơn mức aspectRatio cho phép
  * 
  */
-import { _decorator, Component, Node, UITransform, Vec2 } from "cc";
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass("AspectRatioFitterHold")
+@ccclass
 @executeInEditMode
-export class AspectRatioFitterHold extends Component {
+export default class AspectRatioFitterHold extends cc.Component {
     @property
     autoUpdate: boolean = true;
 
-    @property
-    public aspectRatio: number = 1.0; // Tỷ lệ khung hình mong muốn (width / height)
+    @property({
+        tooltip: "Tỷ lệ khung hình mong muốn (width / height)"
+    })
+    aspectRatio: number = 1.0;
 
-    @property
-    public isFollowWidth: boolean = true; // Theo chiều rộng hay chiều cao
+    @property({
+        tooltip: "Theo chiều rộng"
+    })
+    isFollowWidth: boolean = true;
 
-    @property
-    public isFollowHeight: boolean = true; // Theo chiều rộng hay chiều cao
+    @property({
+        tooltip: "Theo chiều cao"
+    })
+    isFollowHeight: boolean = true;
 
-    @property
-    public isHold: boolean = true; // khi chiều dài vượt ngững Ratio thì sẽ không bị thay đổi và ngược lại
+    @property({
+        tooltip: "Khi chiều dài vượt ngững Ratio thì sẽ không bị thay đổi và ngược lại"
+    })
+    isHold: boolean = true;
 
     start() {
         this.getAspectRatio();
     }
 
-    update(deltaTime: number) {
+    update() {
         if (this.autoUpdate) {
             this.moveToParentCenter();
             this.updateAspectRatio();
@@ -44,9 +51,8 @@ export class AspectRatioFitterHold extends Component {
     }
 
     getAspectRatio() {
-        const uiTransform = this.node.getComponent(UITransform);
-        if (uiTransform) {
-            this.aspectRatio = uiTransform.width / uiTransform.height;
+        if (this.node) {
+            this.aspectRatio = this.node.width / this.node.height;
         }
     }
 
@@ -54,71 +60,61 @@ export class AspectRatioFitterHold extends Component {
         const parent = this.node.parent;
         if (!parent) return;
 
-        const parentTransform = parent.getComponent(UITransform);
-        const uiTransform = this.node.getComponent(UITransform);
+        const parentWidth = parent.width;
+        const parentHeight = parent.height;
+        const currentRatio = parentWidth / parentHeight;
 
-        if (parentTransform && uiTransform) {
-            const parentWidth = parentTransform.width;
-            const parentHeight = parentTransform.height;
-            const currentRatio = parentWidth / parentHeight;
+        let newWidth, newHeight;
 
-            let newWidth, newHeight;
+        if (this.isHold && currentRatio < this.aspectRatio) {
+            this.node.width = parentWidth;
+            this.node.height = parentHeight;
+            return;
+        }
 
-            if (this.isHold && currentRatio < this.aspectRatio) {
-                uiTransform.setContentSize(parentTransform.contentSize.x, parentTransform.contentSize.y);
-                return; // Maintain current size when holding and ratio is exceeded
-            }
-
-            if (this.isFollowWidth && !this.isFollowHeight) {
-                newWidth = parentTransform.width;
+        if (this.isFollowWidth && !this.isFollowHeight) {
+            newWidth = parentWidth;
+            newHeight = newWidth / this.aspectRatio;
+        } else if (this.isFollowHeight && !this.isFollowWidth) {
+            newHeight = parentHeight;
+            newWidth = newHeight * this.aspectRatio;
+        } else if (this.isFollowWidth && this.isFollowHeight) {
+            if (parentWidth / parentHeight < this.aspectRatio) {
+                newWidth = parentWidth;
                 newHeight = newWidth / this.aspectRatio;
-            } else if (this.isFollowHeight && !this.isFollowWidth) {
-                newHeight = parentTransform.height;
+            } else {
+                newHeight = parentHeight;
                 newWidth = newHeight * this.aspectRatio;
-            } else if (this.isFollowWidth && this.isFollowHeight) {
-                if (parentWidth / parentHeight < this.aspectRatio) {
-                    newWidth = parentWidth;
-                    newHeight = newWidth / this.aspectRatio;
-                } else {
-                    newHeight = parentHeight;
-                    newWidth = newHeight * this.aspectRatio;
-                }
             }
+        }
 
-            uiTransform.setContentSize(newWidth, newHeight);
+        if (newWidth !== undefined && newHeight !== undefined) {
+            this.node.width = newWidth;
+            this.node.height = newHeight;
         }
     }
 
-    /**
-     * Di chuyển đối tượng này đến vị trí trung tâm của đối tượng cha
-     * Trả về tọa độ trung tâm của đối tượng cha hoặc undefined nếu không có đối tượng cha
-     */
     getParentPointCenter() {
         const parent = this.node.parent;
         if (!parent) return;
-    
-        const parentTransform = parent.getComponent(UITransform);
-        const nodeTransform = this.node.getComponent(UITransform);
-        if (!parentTransform || !nodeTransform) return;
-    
-        const contentSize = parentTransform.contentSize;
-        const parentAnchor = parentTransform.anchorPoint;
-        const nodeAnchor = nodeTransform.anchorPoint;
-        
-        return new Vec2(
-          contentSize.width * (0.5 - parentAnchor.x + 0.5 - nodeAnchor.x),
-          contentSize.height * (0.5 - parentAnchor.y + 0.5 - nodeAnchor.y)
-        );
-      }
 
-    /**
-     * Di chuyển đối tượng này đến vị trí trung tâm của đối tượng cha
-     */
+        const contentWidth = parent.width;
+        const contentHeight = parent.height;
+        const parentAnchorX = parent.anchorX;
+        const parentAnchorY = parent.anchorY;
+        const nodeAnchorX = this.node.anchorX;
+        const nodeAnchorY = this.node.anchorY;
+        
+        return cc.v2(
+            contentWidth * (0.5 - parentAnchorX + 0.5 - nodeAnchorX),
+            contentHeight * (0.5 - parentAnchorY + 0.5 - nodeAnchorY)
+        );
+    }
+
     moveToParentCenter() {
         const centerPoint = this.getParentPointCenter();
         if (centerPoint) {
-            this.node.setPosition(centerPoint.x, centerPoint.y);
+            this.node.setPosition(centerPoint);
         }
     }
-
 }

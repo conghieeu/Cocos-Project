@@ -13,7 +13,7 @@ export class OpenPanelWhenClick extends Component {
 
     openPanel() {
         if (this.targetPanel) {
-            this.targetPanel.active = true;
+            this.node.active = true;
         }
     }
 

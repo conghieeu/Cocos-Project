@@ -1,16 +1,16 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('ListenWebBehavior')
-export class ListenWebBehavior extends Component {
-    private websiteLoadedHandler: (event: CustomEvent) => void;
-    private visibilityChangedHandler: (event: CustomEvent) => void;
+@ccclass
+export default class ListenWebBehavior extends cc.Component {
+    private websiteLoadedHandler: Function;
+    private visibilityChangedHandler: Function;
 
     start() {
-        this.websiteLoadedHandler = (event: CustomEvent) => {
+        this.websiteLoadedHandler = (event) => {
             try {
-                const { isFirstLoad, fromCache, loadTime, timestamp } = event.detail;
-                console.log('Website loaded:', {
+                const detail = event.getUserData();
+                const { isFirstLoad, fromCache, loadTime, timestamp } = detail;
+                cc.log('Website loaded:', {
                     isFirstLoad,
                     fromCache,
                     loadTime,
@@ -18,25 +18,27 @@ export class ListenWebBehavior extends Component {
                 });
                 this.onWebsiteReady();
             } catch (error) {
-                console.error('Error handling website loaded event:', error);
+                cc.error('Error handling website loaded event:', error);
             }
         };
 
-        this.visibilityChangedHandler = (event: CustomEvent) => {
+        this.visibilityChangedHandler = (event) => {
             try {
-                const { isVisible, timestamp } = event.detail;
+                const detail = event.getUserData();
+                const { isVisible, timestamp } = detail;
                 if (isVisible) {
                     this.onWebsiteVisible();
                 } else {
                     this.onWebsiteHidden();
                 }
             } catch (error) {
-                console.error('Error handling visibility change:', error);
+                cc.error('Error handling visibility change:', error);
             }
         };
 
-        window.addEventListener('websiteLoaded', this.websiteLoadedHandler as EventListener);
-        window.addEventListener('websiteVisibilityChanged', this.visibilityChangedHandler as EventListener);
+        // Use Cocos event system instead of window events
+        cc.systemEvent.on('websiteLoaded', this.websiteLoadedHandler, this);
+        cc.systemEvent.on('websiteVisibilityChanged', this.visibilityChangedHandler, this);
     }
 
     private onWebsiteReady() {
@@ -52,7 +54,8 @@ export class ListenWebBehavior extends Component {
     }
 
     onDestroy() {
-        window.removeEventListener('websiteLoaded', this.websiteLoadedHandler as EventListener);
-        window.removeEventListener('websiteVisibilityChanged', this.visibilityChangedHandler as EventListener);
+        // Clean up event listeners
+        cc.systemEvent.off('websiteLoaded', this.websiteLoadedHandler, this);
+        cc.systemEvent.off('websiteVisibilityChanged', this.visibilityChangedHandler, this);
     }
 }

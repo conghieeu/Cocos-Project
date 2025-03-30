@@ -1,60 +1,60 @@
-import { _decorator, Component, Node, UITransform, Vec2, Vec3 } from "cc";
-const { ccclass, property, executeInEditMode } = _decorator;
+const { ccclass, property, executeInEditMode } = cc._decorator;
 
-@ccclass('MoveLayoutToCenter')
+@ccclass
 @executeInEditMode
-export class MoveLayoutToCenter extends Component {
-
-    @property
-    autoUpdate: boolean = true;
-
-    start() {
-        this.moveToParentCenter();
+export class MoveLayoutToCenter extends cc.Component {
+    // Phương thức static để kiểm tra và thêm component
+    public static ensureComponent(node: cc.Node): MoveLayoutToCenter {
+        let moveLayout = node.getComponent(MoveLayoutToCenter);
+        if (!moveLayout) {
+            moveLayout = node.addComponent(MoveLayoutToCenter);
+        }
+        return moveLayout;
     }
 
     update(deltaTime: number) {
-        if (this.autoUpdate) {
-            this.moveToParentCenter();
-        }
+        this.moveToParentCenter();
     }
 
     getPointCenter() {
         const parent = this.node.parent;
         if (!parent) return;
-    
-        const parentTransform = parent.getComponent(UITransform);
-        const nodeTransform = this.node.getComponent(UITransform);
-        if (!parentTransform || !nodeTransform) return;
-    
-        const parentContentSize = parentTransform.contentSize;
-        const nodeContentSize = nodeTransform.contentSize;
-        const parentAnchor = parentTransform.anchorPoint;
-        const nodeAnchor = nodeTransform.anchorPoint;
-    
-        // Tính toán vị trí center của parent trong hệ tọa độ local của parent
-        const parentCenterLocal = new Vec2(
-            parentContentSize.width * (0.5 - parentAnchor.x),
-            parentContentSize.height * (0.5 - parentAnchor.y)
+
+        // In Cocos 2.4.3, we use node.width/height directly instead of UITransform
+        const parentWidth = parent.width;
+        const parentHeight = parent.height;
+        const nodeWidth = this.node.width;
+        const nodeHeight = this.node.height;
+
+        // In 2.4.3, anchor points are accessed directly from node
+        const parentAnchorX = parent.anchorX;
+        const parentAnchorY = parent.anchorY;
+        const nodeAnchorX = this.node.anchorX;
+        const nodeAnchorY = this.node.anchorY;
+
+        // Calculate parent center in local coordinates
+        const parentCenterLocal = cc.v2(
+            parentWidth * (0.5 - parentAnchorX),
+            parentHeight * (0.5 - parentAnchorY)
         );
-    
-        // Tính toán offset cần thiết để node nằm giữa parent
-        // Cần bù đắp cho anchor point của node
-        const offsetX = nodeContentSize.width * (0.5 - nodeAnchor.x);
-        const offsetY = nodeContentSize.height * (0.5 - nodeAnchor.y);
-    
-        // Vị trí cần đặt để node nằm chính giữa parent
-        const pointCenter = new Vec2(
+
+        // Calculate offset needed for node to be centered
+        const offsetX = nodeWidth * (0.5 - nodeAnchorX);
+        const offsetY = nodeHeight * (0.5 - nodeAnchorY);
+
+        // Calculate final center position
+        const pointCenter = cc.v2(
             parentCenterLocal.x - offsetX,
             parentCenterLocal.y - offsetY
         );
-    
+
         return pointCenter;
     }
 
     moveToParentCenter() {
         const centerPoint = this.getPointCenter();
         if (centerPoint) {
-            this.node.setPosition(centerPoint.x, centerPoint.y);
+            this.node.setPosition(centerPoint);
         }
     }
 }

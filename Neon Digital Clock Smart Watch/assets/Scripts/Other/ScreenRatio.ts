@@ -1,27 +1,26 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('ScreenRatio')
-export class ScreenRatio extends Component {
+@ccclass
+export default class ScreenRatio extends cc.Component {
     start() {
-        window.addEventListener('resize', this.onResize.bind(this));
+        cc.view.on('canvas-resize', this.onResize, this);
         this.onResize(); // Gọi lần đầu để in ra tỷ lệ màn hình khi khởi động
     }
 
     onResize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const size = cc.view.getFrameSize();
+        const width = size.width;
+        const height = size.height;
         const ratio = width / height;
-        console.log(`Screen ratio: ${ratio}`);
+        cc.log(`Screen ratio: ${ratio}`);
 
         // Tạo và phát sự kiện tùy chỉnh
-        const event = new CustomEvent('screenRatioChanged', {
-            detail: { ratio }
-        });
-        window.dispatchEvent(event);
+        const event = new cc.Event.EventCustom('screenRatioChanged', true);
+        event.setUserData({ ratio });
+        this.node.dispatchEvent(event);
     }
 
-    update(deltaTime: number) {
-        
+    onDestroy() {
+        cc.view.off('canvas-resize', this.onResize, this);
     }
 }

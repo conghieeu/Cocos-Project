@@ -1,27 +1,54 @@
-declare const cc: any;
-const { _decorator, Component, Node, UITransform, view } = cc;
-const { ccclass, property } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('AutoScale')
-export class AutoScale extends Component {
-    @property
-    private referenceResolution: { width: number, height: number } = { width: 1920, height: 1080 };
+@ccclass
+@executeInEditMode
+export default class AutoScale extends cc.Component {
+    @property({ 
+        type: cc.Node,
+        tooltip: "Node cha" 
+    })
+    parentNode: cc.Node | null = null;
 
-    start() {
-        this.updateScale();
-        view.on('canvas-resize', this.updateScale, this);
-    }
+    @property({ 
+        tooltip: "Kích thước của node cha" 
+    })
+    parentContentSize: cc.Vec2 = cc.v2(0, 0);
 
-    private updateScale() {
-        const uiTransform = this.node.getComponent(UITransform);
-        if (uiTransform) {
-            // Scale calculation logic here
+    @property({ 
+        tooltip: "Kích thước ban đầu của node con" 
+    })
+    contentSize: cc.Vec2 = cc.v2(0, 0);
+
+    @property({ 
+        tooltip: "Vị trí ban đầu của node con" 
+    })
+    position: cc.Vec2 = cc.v2(0, 0);
+
+    onEnable() {
+        this.parentNode = this.node.parent;
+        if (this.parentNode) {
+            this.parentContentSize = cc.v2(this.parentNode.width, this.parentNode.height);
         }
+        this.contentSize = cc.v2(this.node.width, this.node.height);
+        this.position = cc.v2(this.node.x, this.node.y);
     }
 
-    onDestroy() {
-        view.off('canvas-resize', this.updateScale, this);
+    update() {
+        this.updateTransform();
+    }
+
+    private updateTransform() {
+        if (!this.parentNode) return;
+
+        const ratioScaleParentWidth = this.parentNode.width / this.parentContentSize.x;
+        const ratioScaleParentHeight = this.parentNode.height / this.parentContentSize.y;
+
+        // Update size
+        this.node.width = this.contentSize.x * ratioScaleParentWidth;
+        this.node.height = this.contentSize.y * ratioScaleParentHeight;
+
+        // Update position
+        this.node.x = this.position.x * ratioScaleParentWidth;
+        this.node.y = this.position.y * ratioScaleParentHeight;
     }
 }
-
-

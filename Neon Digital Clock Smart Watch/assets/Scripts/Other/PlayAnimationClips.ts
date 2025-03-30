@@ -1,30 +1,33 @@
-import { _decorator, Component, Node, Animation, AnimationClip } from 'cc';
-const { ccclass, property } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('AutoPlayClips')
-export class AutoPlayClips extends Component {
-    @property(Animation)
-    private anim: Animation = null;
+@ccclass
+export class PlayAnimationClips extends cc.Component {
+    @property(cc.Animation)
+    private anim: cc.Animation = null;
 
     private currentClipIndex: number = 0;
 
-    @property({ type: Number, tooltip: "Clip sẽ được lập đi lập lại khi mảng hết" })
+    @property({ type: cc.Integer, tooltip: "Clip sẽ được lập đi lập lại khi mảng hết" })
     clipLoopIndex: number = 0;
 
-    start() {
+    onLoad() {
         if (this.anim) {
-            this.anim.on(Animation.EventType.FINISHED, this.onAnimationFinished, this);
+            this.anim.on('finished', this.onAnimationFinished, this);
             this.playCurrentClip();
         }
     }
 
     private playCurrentClip() {
-        const clips = this.anim.clips;
-        if (clips.length > 0) {
-            if (this.currentClipIndex >= clips.length) {
-                this.currentClipIndex = this.clipLoopIndex; // Quay lại clip được chỉ định
-            }
-            this.anim.play(clips[this.currentClipIndex].name);
+        const clips = this.anim.getClips();
+        if (!clips || clips.length === 0) return;
+
+        if (this.currentClipIndex >= clips.length) {
+            this.currentClipIndex = this.clipLoopIndex; // Quay lại clip được chỉ định
+        }
+
+        const clipName = clips[this.currentClipIndex].name;
+        if (clipName && cc.isValid(this.anim)) {
+            this.anim.play(clipName);
         }
     }
 
@@ -34,8 +37,8 @@ export class AutoPlayClips extends Component {
     }
 
     onDestroy() {
-        if (this.anim) {
-            this.anim.off(Animation.EventType.FINISHED, this.onAnimationFinished, this);
+        if (this.anim && cc.isValid(this.anim)) {
+            this.anim.off('finished', this.onAnimationFinished, this);
         }
     }
 }

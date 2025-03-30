@@ -1,21 +1,19 @@
-import { _decorator, Component, Node, UITransform, Vec3, CCFloat, CCBoolean, Rect, Enum, Vec2 } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('VerticalLayout')
+@ccclass
 @executeInEditMode
-export default class VerticalLayout extends Component {
+export default class VerticalLayout extends cc.Component {
     @property({ 
-        type: CCFloat, 
+        type: cc.Float, 
         tooltip: "Khoảng cách giữa các phần tử con",
         min: 0 
     })
     spacing: number = 10;
 
-    private _parentTransform: UITransform | null = null;
-
     start() {
-        this._parentTransform = this.node.getComponent(UITransform);
-        this._parentTransform.setAnchorPoint(0, 0);
+        // In 2.4.3, anchor point is set directly on the node
+        this.node.anchorX = 0;
+        this.node.anchorY = 0;
         this.updateLayout();
     }
 
@@ -24,18 +22,22 @@ export default class VerticalLayout extends Component {
     }
 
     private updateLayout() {
-        const width = this._parentTransform.width;
+        const width = this.node.width;
         const height = this.getChildHeight();
 
         for (let child of this.node.children) {
-            child.getComponent(UITransform).setContentSize(width, height);
+            // Set content size directly on node in 2.4.3
+            child.width = width;
+            child.height = height;
         }
 
-        let newPos = new Vec3(0, 0, 0);
+        let newPos = cc.v3(0, 0, 0);
         // set vị trí cho các child
         for (let i = 0; i < this.node.children.length; i++) {
             let child = this.node.children[i];
-            child.getComponent(UITransform).setAnchorPoint(0, 0);
+            // Set anchor point directly on node
+            child.anchorX = 0;
+            child.anchorY = 0;
             child.setPosition(newPos);
 
             newPos.y += height + this.getSpacing();
@@ -50,7 +52,7 @@ export default class VerticalLayout extends Component {
     // chiều dài của các child cần để khít với cha
     private getChildHeight(): number {
         let count = this.node.children.length;
-        return (this._parentTransform.height - (this.getSpacing() * (count - 1))) / count;
+        return (this.node.height - (this.getSpacing() * (count - 1))) / count;
     }
 
 }

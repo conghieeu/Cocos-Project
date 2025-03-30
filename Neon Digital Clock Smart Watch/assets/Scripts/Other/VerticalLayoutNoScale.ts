@@ -1,35 +1,34 @@
 /*
 * đây là một component layout dạng vertical không scale tự động
 */
-import { _decorator, Component, Node, UITransform, Vec2, CCBoolean } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('VerticalLayoutNoScale')
+@ccclass
 @executeInEditMode
-export default class VerticalLayoutNoScale extends Component {
-    private _parentTransform: UITransform | null = null;
-
-    @property({ type: CCBoolean, tooltip: "Tự động cập nhật trong runtime" })
+export default class VerticalLayoutNoScale extends cc.Component {
+    @property({tooltip: "Tự động cập nhật trong runtime"})
     autoUpdate = true;
 
     // danh sách vector2 đây là danh sách size của các child con lúc ban đầu
     @property({
-        type: [Vec2],
+        type: [cc.Vec2],
         // visible: false
     })
-    private childSize: Vec2[] = [];
+    private childSize: cc.Vec2[] = [];
 
     start() {
         this.initChildSize();
-
-        this._parentTransform = this.node.getComponent(UITransform);
-        this._parentTransform.setAnchorPoint(0, 0);
+        
+        // In 2.4.3, set anchor points directly on nodes
+        this.node.anchorX = 0;
+        this.node.anchorY = 0;
 
         this.updateLayout();
 
         // set anchor point cho các child
         for (let child of this.node.children) {
-            child.getComponent(UITransform).setAnchorPoint(0, 0);
+            child.anchorX = 0;
+            child.anchorY = 0;
         }
     }
 
@@ -39,28 +38,29 @@ export default class VerticalLayoutNoScale extends Component {
     }
 
     update() {
-        if (!this.autoUpdate)
+        if (!this.autoUpdate) {
             this.updateLayout();
+        }
     }
 
     private initChildSize() {
         this.childSize = [];
         for (let child of this.node.children) {
-            this.childSize.push(new Vec2(child.getComponent(UITransform).width, child.getComponent(UITransform).height));
+            this.childSize.push(cc.v2(child.width, child.height));
         }
     }
 
     private updateLayout() {
-        const width = this._parentTransform.width;
+        const width = this.node.width;
         const height = this.getChildHeight();
 
         // để vị trí child cuối lênh trên đầu
         let lastChild = this.node.children[this.node.children.length - 1];
-        let lastChildPositionY = this._parentTransform.height - lastChild.getComponent(UITransform).height;
-        this.node.children[this.node.children.length - 1].setPosition(new Vec3(0, lastChildPositionY));
+        let lastChildPositionY = this.node.height - lastChild.height;
+        this.node.children[this.node.children.length - 1].setPosition(cc.v2(0, lastChildPositionY));
 
         // set vị trí cho các child
-        let newPos = new Vec3(0, 0, 0);
+        let newPos = cc.v2(0, 0);
         for (let i = 0; i < this.node.children.length - 1; i++) {
             let child = this.node.children[i];
             child.setPosition(newPos);
@@ -71,14 +71,13 @@ export default class VerticalLayoutNoScale extends Component {
         // tự scale y khi các phần tử con đè lênh nhau
         for (let i = 0; i < this.node.children.length; i++) {
             let child = this.node.children[i];
-            child.getComponent(UITransform).setContentSize(width, child.getComponent(UITransform).height);
-            
+            child.width = width;
         }
     }
 
     // chiều dài của các child cần để khít với cha
     private getChildHeight(): number {
         let count = this.node.children.length;
-        return (this._parentTransform.height) / count;
+        return this.node.height / count;
     }
 }

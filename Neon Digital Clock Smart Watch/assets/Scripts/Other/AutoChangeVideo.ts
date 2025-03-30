@@ -1,11 +1,15 @@
-declare const cc: any;
-const { _decorator, Component, Node, VideoPlayer } = cc;
-const { ccclass, property } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('AutoChangeVideo')
-export class AutoChangeVideo extends Component {
-    @property(VideoPlayer)
-    videoPlayer: VideoPlayer | null = null;
+@ccclass
+export class AutoChangeVideo extends cc.Component {
+    @property(cc.VideoPlayer)
+    videoPlayer: cc.VideoPlayer | null = null;
+
+    @property({
+        type: [cc.Asset],
+        tooltip: "List of videos to play"
+    })
+    videoList: cc.Asset[] = [];
 
     @property
     private maxRetries: number = 3;
@@ -19,65 +23,61 @@ export class AutoChangeVideo extends Component {
     start() {
         this.initializeVideo();
 
-        // Thêm listener cho reload event
-        if (sys.isBrowser) {
-            window.addEventListener('beforeunload', () => {
-                // Lưu trạng thái video trước khi reload
-                localStorage.setItem('videoState', JSON.stringify({
-                    index: this.currentVideoIndex,
-                    time: this.videoPlayer?.currentTime || 0,
-                    timestamp: Date.now()
-                }));
-            });
+        // Add reload event listener
+        if (CC_JSB) return; // Skip for native platforms
+        
+        window.addEventListener('beforeunload', () => {
+            // Save video state before reload
+            cc.sys.localStorage.setItem('videoState', JSON.stringify({
+                index: this.currentVideoIndex,
+                time: this.videoPlayer?.currentTime || 0,
+                timestamp: Date.now()
+            }));
+        });
 
-            // Kiểm tra và khôi phục trạng thái sau khi load
-            this.checkPreviousState();
+        // Check and restore previous state
+        this.checkPreviousState();
+
+        // Listen for custom events
+        cc.game.on('websiteLoaded', this.restartVideo, this);
+        cc.game.on('websiteVisibilityChanged', this.onVisibilityChanged, this);
+    }
+
+    private onVisibilityChanged(event) {
+        const isVisible = event.detail?.isVisible;
+        if (isVisible) {
+            this.checkAndRestartVideo();
         }
-
-        // Lắng nghe sự kiện website loaded để reset video
-        window.addEventListener('websiteLoaded', () => {
-            this.restartVideo();
-        });
-
-        // Lắng nghe sự kiện visibility để xử lý khi tab được active lại
-        window.addEventListener('websiteVisibilityChanged', (event: CustomEvent) => {
-            const { isVisible } = event.detail;
-            if (isVisible) {
-                this.checkAndRestartVideo();
-            }
-        });
     }
 
     private checkPreviousState() {
         try {
-            const savedState = localStorage.getItem('videoState');
+            const savedState = cc.sys.localStorage.getItem('videoState');
             if (savedState) {
                 const state = JSON.parse(savedState);
-                // Chỉ khôi phục nếu thời gian reload < 3 giây
                 if (Date.now() - state.timestamp < 3000) {
                     this.currentVideoIndex = state.index;
                     this.scheduleOnce(() => {
                         this.playCurrentVideo();
-                        // Seek đến vị trí cũ
                         if (this.videoPlayer) {
                             this.videoPlayer.currentTime = state.time;
                         }
                     }, 0.5);
                 }
-                localStorage.removeItem('videoState');
+                cc.sys.localStorage.removeItem('videoState');
             }
         } catch (error) {
-            console.error('Error restoring video state:', error);
+            cc.error('Error restoring video state:', error);
         }
     }
 
     private initializeVideo() {
         if (!this.videoPlayer || this.videoList.length === 0) {
-            console.warn('Video player or video list not properly initialized');
+            cc.warn('Video player or video list not properly initialized');
             return;
         }
 
-        // Cleanup existing listeners
+        // Remove existing listeners
         this.videoPlayer.node.off('completed', this.onVideoCompleted, this);
         this.videoPlayer.node.off('error', this.onVideoError, this);
 
@@ -85,7 +85,6 @@ export class AutoChangeVideo extends Component {
         this.videoPlayer.node.on('completed', this.onVideoCompleted, this);
         this.videoPlayer.node.on('error', this.onVideoError, this);
 
-        // Initial play with delay
         this.scheduleOnce(() => {
             this.playCurrentVideo();
         }, 0.1);
@@ -93,14 +92,14 @@ export class AutoChangeVideo extends Component {
 
     private playCurrentVideo() {
         if (!this.videoPlayer || !this.videoList.length) {
-            console.error('Video player or video list not initialized');
+            cc.error('Video player or video list not initialized');
             return;
         }
 
         try {
             this.retryCount = 0;
             
-            if (!navigator?.onLine) {
+            if (CC_JSB || !navigator?.onLine) {
                 this.scheduleOnce(this.playCurrentVideo.bind(this), 1);
                 return;
             }
@@ -109,17 +108,19 @@ export class AutoChangeVideo extends Component {
                 this.videoPlayer.stop();
             }
 
-            this.videoPlayer.clip = this.videoList[this.currentVideoIndex];
+            // Ensure index is within bounds
+            this.currentVideoIndex = this.currentVideoIndex % this.videoList.length;
+            this.videoPlayer.remoteURL = this.videoList[this.currentVideoIndex].url;
             
             this.scheduleOnce(() => {
-                if (this.videoPlayer) {
+                if (this.videoPlayer && cc.isValid(this.videoPlayer)) {
                     this.videoPlayer.play();
                     this.schedule(this.checkVideoPlayback, 0.5, 5);
                 }
             }, 0.3);
 
         } catch (error) {
-            console.error('Error playing video:', error);
+            cc.error('Error playing video:', error);
             this.handlePlaybackFailure();
         }
     }
@@ -132,35 +133,34 @@ export class AutoChangeVideo extends Component {
 
     private handlePlaybackFailure() {
         if (this.retryCount < this.maxRetries) {
-            console.warn(`Retry attempt ${this.retryCount + 1} of ${this.maxRetries}`);
+            cc.warn(`Retry attempt ${this.retryCount + 1} of ${this.maxRetries}`);
             this.retryCount++;
             
-            // Retry with increasing delay
             this.scheduleOnce(() => {
                 this.playCurrentVideo();
             }, this.retryDelay * this.retryCount);
         } else {
-            console.error('Max retries reached, moving to next video');
+            cc.error('Max retries reached, moving to next video');
             this.retryCount = 0;
-            this.currentVideoIndex++;
+            this.currentVideoIndex = (this.currentVideoIndex + 1) % this.videoList.length;
             this.playCurrentVideo();
         }
     }
 
     private checkAndRestartVideo() {
-        // Kiểm tra nếu video không phát hoặc bị đứng
-        if (this.videoPlayer && (!this.videoPlayer.isPlaying || this.videoPlayer.currentTime === this.videoPlayer.duration)) {
+        if (this.videoPlayer && (!this.videoPlayer.isPlaying || 
+            this.videoPlayer.currentTime >= this.videoPlayer.getDuration())) {
             this.restartVideo();
         }
     }
 
     private onVideoCompleted() {
-        this.currentVideoIndex++;
+        this.currentVideoIndex = (this.currentVideoIndex + 1) % this.videoList.length;
         this.playCurrentVideo();
     }
 
     private onVideoError(event) {
-        console.error('Video playback error:', event);
+        cc.error('Video playback error:', event);
         this.handlePlaybackFailure();
     }
 
@@ -169,10 +169,11 @@ export class AutoChangeVideo extends Component {
             this.videoPlayer.node.off('completed', this.onVideoCompleted, this);
             this.videoPlayer.node.off('error', this.onVideoError, this);
         }
+        cc.game.off('websiteLoaded', this.restartVideo, this);
+        cc.game.off('websiteVisibilityChanged', this.onVisibilityChanged, this);
         this.unscheduleAllCallbacks();
     }
 
-    // Public method to force restart video playback
     public restartVideo() {
         this.currentVideoIndex = 0;
         this.retryCount = 0;

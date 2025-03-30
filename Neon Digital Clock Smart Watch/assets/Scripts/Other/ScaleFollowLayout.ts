@@ -1,17 +1,22 @@
-import { _decorator, Component, Node, UITransform, CCBoolean } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('ScaleFollowLayout')
-export class ScaleFollowLayout extends Component {
-    @property({ type: UITransform, tooltip: "Node cha" })
-    parent: UITransform | null = null;
+@ccclass
+export default class ScaleFollowLayout extends cc.Component {
+    @property({
+        type: cc.Node,
+        tooltip: "Node cha"
+    })
+    parent: cc.Node | null = null;
 
-    @property({ type: CCBoolean, tooltip: "Theo chiều rộng" })
-    followWidth = true;
+    @property({
+        tooltip: "Theo chiều rộng"
+    })
+    followWidth: boolean = true;
 
-    @property({ type: CCBoolean, tooltip: "Theo chiều cao" })
-    followHeight = true;
-
+    @property({
+        tooltip: "Theo chiều cao"
+    })
+    followHeight: boolean = true;
 
     start() {
         this.updateScale();
@@ -24,26 +29,23 @@ export class ScaleFollowLayout extends Component {
     updateScale() {
         if (!this.parent) return;
 
-        // chỉnh uiTransform đối tượng này theo parent
-        const uiTransform = this.node.getComponent(UITransform);
-        if (!uiTransform) return;
-
         const parentWidth = this.parent.width;
         const parentHeight = this.parent.height;
 
         // Calculate scale ratios
-        const widthRatio = parentWidth / uiTransform.width;
-        const heightRatio = parentHeight / uiTransform.height;
+        const widthRatio = parentWidth / this.node.width;
+        const heightRatio = parentHeight / this.node.height;
 
         // Apply scale based on follow settings
         if (this.followWidth && this.followHeight) {
             // Use the smaller ratio to maintain aspect ratio
             const scale = Math.min(widthRatio, heightRatio);
-            this.node.setScale(scale, scale);
+            this.node.scaleX = scale;
+            this.node.scaleY = scale;
         } else if (this.followWidth) {
-            this.node.setScale(widthRatio, this.node.scale.y);
+            this.node.scaleX = widthRatio;
         } else if (this.followHeight) {
-            this.node.setScale(this.node.scale.x, heightRatio);
+            this.node.scaleY = heightRatio;
         }           
     }
 }

@@ -1,29 +1,34 @@
-import { _decorator, Component, Node, Animation, AnimationClip } from 'cc';
-const { ccclass, property } = _decorator;
+const {ccclass, property} = cc._decorator;
 
-@ccclass('PlayAnimationClips')
-export class PlayAnimationClips extends Component {
-    @property(Animation)
-    private anim: Animation = null;
+@ccclass
+export class AutoPlayClips extends cc.Component {
+    @property(cc.Animation)
+    private anim: cc.Animation = null;
 
     private currentClipIndex: number = 0;
 
-    start() {
+    onLoad() {
         if (this.anim) {
-            // Lắng nghe sự kiện khi animation kết thúc
-            this.anim.on(Animation.EventType.FINISHED, this.onAnimationFinished, this);
-            // Play animation đầu tiên
+            // Listen for animation finished event using Cocos 2.4.3 event system
+            this.anim.on('finished', this.onAnimationFinished, this);
+            // Play first animation
             this.playCurrentClip();
         }
     }
 
     private playCurrentClip() {
-        const clips = this.anim.clips;
-        if (clips.length > 0) {
+        if (!this.anim || !cc.isValid(this.anim)) return;
+
+        const clips = this.anim.getClips();
+        if (clips && clips.length > 0) {
             if (this.currentClipIndex >= clips.length) {
-                this.currentClipIndex = 0; // Quay lại clip đầu tiên nếu đã hết
+                this.currentClipIndex = 0; // Reset to first clip if we've reached the end
             }
-            this.anim.play(clips[this.currentClipIndex].name);
+            
+            const clipName = clips[this.currentClipIndex].name;
+            if (clipName) {
+                this.anim.play(clipName);
+            }
         }
     }
 
@@ -33,8 +38,8 @@ export class PlayAnimationClips extends Component {
     }
 
     onDestroy() {
-        if (this.anim) {
-            this.anim.off(Animation.EventType.FINISHED, this.onAnimationFinished, this);
+        if (this.anim && cc.isValid(this.anim)) {
+            this.anim.off('finished', this.onAnimationFinished, this);
         }
     }
 }

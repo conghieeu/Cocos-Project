@@ -1,27 +1,28 @@
-import { _decorator, Component, Node } from 'cc';
-import { AutoScale } from "./AutoScale";
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('AddAutoScale')
+@ccclass
 @executeInEditMode
-export class AddAutoScale extends Component {
+export default class AddAutoScale extends cc.Component {
     // Mảng lưu trữ các node đã được thêm AutoScale
-    @property({ type: [Node] })
-    private nodesChildren: Node[] = [];
+    @property({ 
+        type: [cc.Node],
+        tooltip: "Danh sách các node con cần thêm AutoScale"
+    })
+    private nodesChildren: cc.Node[] = [];
 
     start() {
         this.getNodesChildren();
         this.addAutoScaleToChildren();
     }
 
-    protected onEnable(): void {
+    onEnable() {
         this.addAutoScaleToChildren();
     }
 
-    protected onDisable(): void {
+    onDisable() {
         this.removeAutoScaleFromChildren();
     }
-
+    
     private getNodesChildren() {
         // Lặp qua tất cả các child nodes
         this.node.children.forEach(child => {
@@ -35,16 +36,22 @@ export class AddAutoScale extends Component {
 
     private addAutoScaleToChildren() {
         this.nodesChildren.forEach(child => {
-            if (!child.getComponent(AutoScale)) {
-                child.addComponent(AutoScale);
+            if (child && cc.isValid(child)) {
+                let autoScale = child.getComponent('AutoScale');
+                if (!autoScale) {
+                    child.addComponent('AutoScale');
+                }
             }
         });
     }
 
     private removeAutoScaleFromChildren() {
-        this.nodesChildren.forEach(node => {
-            if (node?.isValid) {
-                node.removeComponent('AutoScale');
+        this.nodesChildren.forEach(child => {
+            if (child && cc.isValid(child)) {
+                let autoScale = child.getComponent('AutoScale');
+                if (autoScale) {
+                    child.removeComponent('AutoScale');
+                }
             }
         });
     }

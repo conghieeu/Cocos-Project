@@ -1,29 +1,25 @@
-import { _decorator, Component, Node, UITransform, Vec2, Vec3, CCBoolean } from 'cc';
-const { ccclass, property, executeInEditMode } = _decorator;
+const {ccclass, property, executeInEditMode} = cc._decorator;
 
-@ccclass('LayoutTopDown')
+@ccclass
 @executeInEditMode
-export class LayoutTopDown extends Component {
+export class LayoutTopDown extends cc.Component {
+    @property({type: cc.Node, tooltip: "Layout trên"})
+    layoutTop: cc.Node | null = null;
 
-    private _parentTransform: UITransform | null = null;
+    @property({type: cc.Node, tooltip: "Layout dưới"})
+    layoutBottom: cc.Node | null = null;
 
-    @property({ type: Node, tooltip: "Layout trên" })
-    layoutTop: Node | null = null;
+    @property({visible: false})
+    layoutTopSize = cc.v2(0, 0);
 
-    @property({ type: Node, tooltip: "Layout dưới" })
-    layoutBottom: Node | null = null;
+    @property({visible: false})
+    layoutBottomSize = cc.v2(0, 0);
 
-    @property({ type: Vec2, visible: false })
-    layoutTopSize: Vec2 = new Vec2(0, 0);
-
-    @property({ type: Vec2, visible: false })
-    layoutBottomSize: Vec2 = new Vec2(0, 0);
-
-    @property({ type: CCBoolean, tooltip: "Tự động cập nhật trong runtime" })
+    @property({tooltip: "Tự động cập nhật trong runtime"})
     autoUpdate = true;
 
     start() {
-        this._parentTransform = this.node.getComponent(UITransform);
+        // No need for UITransform in 2.4.3
     }
 
     resetInEditor() { 
@@ -38,50 +34,50 @@ export class LayoutTopDown extends Component {
         this.layoutTop = this.node.children[1];
         this.layoutBottom = this.node.children[0];
         
-        this.layoutTop.getComponent(UITransform).setAnchorPoint(0, 0);
-        this.layoutBottom.getComponent(UITransform).setAnchorPoint(0, 0);
+        // In 2.4.3, anchor point is set directly on node
+        if (this.layoutTop) this.layoutTop.anchorX = this.layoutTop.anchorY = 0;
+        if (this.layoutBottom) this.layoutBottom.anchorX = this.layoutBottom.anchorY = 0;
     }
 
     update() {
-        if (this.autoUpdate)
+        if (this.autoUpdate) {
             this.updateLayout();
+        }
     }
 
     private updateLayout() {
         if (!this.layoutTop || !this.layoutBottom) return;
-        const width = this._parentTransform.width;
+        const width = this.node.width;
 
         // set size width
         for (let child of this.node.children) {
-            child.getComponent(UITransform).setContentSize(width, child.getComponent(UITransform).height);
+            child.width = width;
         }
         
         // set position
-        this.layoutTop.setPosition(0, this._parentTransform.height - this.layoutTop.getComponent(UITransform).height);
+        this.layoutTop.setPosition(0, this.node.height - this.layoutTop.height);
         this.layoutBottom.setPosition(0, 0);
 
         this.autoScaleLayout();
     }
 
     private autoScaleLayout() {
-        const width = this._parentTransform.width;
+        const width = this.node.width;
 
-        let layoutTopTrans = this.layoutTop.getComponent(UITransform);
-        let layoutBottomTrans = this.layoutBottom.getComponent(UITransform);
-
-        if (layoutTopTrans.height + layoutBottomTrans.height > this._parentTransform.height) {
-            layoutTopTrans.setContentSize(width, this._parentTransform.height - layoutBottomTrans.height);
-        }
-        else {
-            layoutTopTrans.setContentSize(width, this.layoutTopSize.y);
+        if (this.layoutTop.height + this.layoutBottom.height > this.node.height) {
+            this.layoutTop.height = this.node.height - this.layoutBottom.height;
+            this.layoutTop.width = width;
+        } else {
+            this.layoutTop.width = width;
+            this.layoutTop.height = this.layoutTopSize.y;
         }
     }
 
     private getLayoutSize() {
         if (!this.layoutTop || !this.layoutBottom) return;
 
-        this.layoutTopSize = new Vec2(this.layoutTop.getComponent(UITransform).width, this.layoutTop.getComponent(UITransform).height);
-        this.layoutBottomSize = new Vec2(this.layoutBottom.getComponent(UITransform).width, this.layoutBottom.getComponent(UITransform).height);
+        this.layoutTopSize = cc.v2(this.layoutTop.width, this.layoutTop.height);
+        this.layoutBottomSize = cc.v2(this.layoutBottom.width, this.layoutBottom.height);
     }
 }
 
