@@ -1,0 +1,1 @@
+python generate_single_html.py True
