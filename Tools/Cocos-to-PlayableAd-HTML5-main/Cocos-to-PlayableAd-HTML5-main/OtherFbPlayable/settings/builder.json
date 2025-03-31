@@ -7,7 +7,7 @@
     "upsideDown": false
   },
   "packageName": "org.cocos2d.helloworld",
-  "startScene": "9613db81-6c95-42ba-9736-249ff4ae7a0b",
+  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
   "title": "hello_world",
   "webOrientation": "auto",
   "inlineSpriteFrames": false,
@@ -18,7 +18,7 @@
   "md5Cache": false,
   "nativeMd5Cache": true,
   "encryptJs": true,
-  "xxteaKey": "0f09d692-a506-47",
+  "xxteaKey": "120a6213-0c67-45",
   "zipCompressJs": true,
   "fb-instant-games": {},
   "android": {

@@ -7,8 +7,8 @@
     "upsideDown": false
   },
   "packageName": "org.cocos2d.helloworld",
-  "startScene": "9613db81-6c95-42ba-9736-249ff4ae7a0b",
-  "title": "hello_world",
+  "startScene": "97d90820-ba90-48c5-a082-9cd300d33b77",
+  "title": "neon_digital_clock_smart_watch",
   "webOrientation": "auto",
   "inlineSpriteFrames": false,
   "inlineSpriteFrames_native": true,

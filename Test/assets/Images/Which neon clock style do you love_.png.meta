@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "90af371a-1d41-43ff-8da8-e95e444f8d04",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 288,
+  "height": 49,
+  "platformSettings": {},
+  "subMetas": {
+    "Which neon clock style do you love_": {
+      "ver": "1.0.4",
+      "uuid": "a9ce80c6-4cdd-4556-b374-0ce0737e5387",
+      "rawTextureUuid": "90af371a-1d41-43ff-8da8-e95e444f8d04",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": -0.5,
+      "trimX": 0,
+      "trimY": 1,
+      "width": 288,
+      "height": 48,
+      "rawWidth": 288,
+      "rawHeight": 49,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
