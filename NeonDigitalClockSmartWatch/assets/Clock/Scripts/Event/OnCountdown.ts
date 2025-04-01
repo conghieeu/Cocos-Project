@@ -1,3 +1,5 @@
+import PlayableAds from "../../PlayableAds";
+
 declare const cc: any;
 const { _decorator, Component, Node, VideoPlayer } = cc;
 const { ccclass, property } = _decorator;
@@ -15,6 +17,9 @@ export class OnCountdown extends Component {
 
     @property({ tooltip: "Đường dẫn website sẽ được mở sau khi hết thời gian" })
     url: string = 'https://example.com';
+
+    @property(PlayableAds)
+    PlayableAds: PlayableAds;
 
     start() {
         // Đặt timer để thực hiện chuyển đổi sau delayTime giây
@@ -39,9 +44,13 @@ export class OnCountdown extends Component {
         });
 
         // Mở trang web
-        if (this.url !== '') {
-            window.open(this.url, '_blank');
-        }
+        // if (this.url !== '') {
+        //     window.open(this.url, '_blank');
+        // }
+        
+        this.PlayableAds.onGameInstall();
+        this.PlayableAds.onGameFinished();
+ 
     }
 
     onDestroy() {
